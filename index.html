@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q-Commerce Entry Analyzer — Bharanidhar S</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080b10;
+  --bg2: #0d1117;
+  --border: rgba(0,240,180,0.12);
+  --accent: #00f0b4;
+  --text: #e8f0fe;
+  --muted: #6b7fa0;
+  --mono: 'Space Mono', monospace;
+  --display: 'Syne', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--mono);
+  font-size:14px;
+  line-height:1.7;
+  overflow-x:hidden;
+}
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(0,240,180,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,240,180,0.02) 1px, transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;
+  z-index:0;
+}
+nav {
+  position:fixed;
+  top:0; left:0; right:0;
+  z-index:100;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:1.2rem 6%;
+  background:rgba(8,11,16,0.9);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo {
+  font-family:var(--display);
+  font-weight:800;
+  font-size:1rem;
+  color:var(--text);
+  text-decoration:none;
+}
+.nav-logo span { color:var(--accent); }
+.nav-links { display:flex; align-items:center; gap:2rem; list-style:none; }
+.nav-links a {
+  color:var(--muted);
+  text-decoration:none;
+  font-size:11px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  transition:color 0.2s;
+}
+.nav-links a:hover { color:var(--accent); }
+.nav-cta {
+  padding:0.5rem 1.25rem;
+  border:1px solid var(--accent);
+  color:var(--accent) !important;
+  transition:all 0.2s !important;
+}
+.nav-cta:hover { background:var(--accent); color:var(--bg) !important; }
+#hero {
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  padding:0 6%;
+  position:relative;
+  z-index:1;
+}
+.hero-inner { max-width:1100px; margin:0 auto; width:100%; }
+.hero-tag {
+  font-size:11px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:1.5rem;
+  display:flex;
+  align-items:center;
+  gap:0.75rem;
+  opacity:0;
+  animation:fadeUp 0.6s 0.2s forwards;
+}
+.hero-tag::before {
+  content:'';
+  display:inline-block;
+  width:24px;
+  height:1px;
+  background:var(--accent);
+}
+.hero-headline {
+  font-family:var(--display);
+  font-weight:800;
+  font-size:clamp(2.8rem,7vw,6rem);
+  line-height:0.95;
+  letter-spacing:-0.03em;
+  margin-bottom:1.5rem;
+  opacity:0;
+  animation:fadeUp 0.6s 0.35s forwards;
+}
+.hero-headline .line1 { display:block; color:var(--text); }
+.hero-headline .line2 {
+  display:block;
+  color:transparent;
+  -webkit-text-stroke:1.5px var(--accent);
+}
+.hero-desc {
+  font-size:13px;
+  color:var(--muted);
+  max-width:520px;
+  line-height:1.9;
+  margin-bottom:2.5rem;
+  opacity:0;
+  animation:fadeUp 0.6s 0.5s forwards;
+}
+.hero-cta {
+  display:flex;
+  gap:1rem;
+  flex-wrap:wrap;
+  opacity:0;
+  animation:fadeUp 0.6s 0.65s forwards;
+}
+.btn-primary {
+  padding:0.85rem 2rem;
+  background:var(--accent);
+  color:var(--bg);
+  font-family:var(--mono);
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  text-decoration:none;
+  transition:opacity 0.2s;
+  display:inline-block;
+}
+.btn-primary:hover { opacity:0.85; }
+.btn-ghost {
+  padding:0.85rem 2rem;
+  border:1px solid var(--border);
+  color:var(--muted);
+  font-family:var(--mono);
+  font-size:12px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  text-decoration:none;
+  transition:all 0.2s;
+  display:inline-block;
+}
+.btn-ghost:hover { border-color:var(--accent); color:var(--accent); }
+.stats-bar {
+  display:flex;
+  margin-top:5rem;
+  border:1px solid var(--border);
+  opacity:0;
+  animation:fadeUp 0.6s 0.8s forwards;
+}
+.stat-item {
+  flex:1;
+  padding:1.5rem 2rem;
+  border-right:1px solid var(--border);
+}
+.stat-item:last-child { border-right:none; }
+.stat-num {
+  font-family:var(--display);
+  font-weight:800;
+  font-size:2rem;
+  color:var(--accent);
+  display:block;
+  line-height:1;
+  margin-bottom:0.3rem;
+}
+.stat-label {
+  font-size:11px;
+  color:var(--muted);
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+}
+section.content {
+  position:relative;
+  z-index:1;
+  max-width:1100px;
+  margin:0 auto;
+  padding:6rem 6%;
+}
+.section-tag {
+  font-size:11px;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:0.75rem;
+  display:flex;
+  align-items:center;
+  gap:0.75rem;
+}
+.section-tag::before {
+  content:'';
+  display:inline-block;
+  width:24px;
+  height:1px;
+  background:var(--accent);
+}
+.section-num {
+  font-family:var(--display);
+  font-weight:800;
+  font-size:clamp(4rem,10vw,9rem);
+  color:rgba(0,240,180,0.04);
+  line-height:1;
+  margin-bottom:-1rem;
+  letter-spacing:-0.05em;
+}
+.section-title {
+  font-family:var(--display);
+  font-weight:800;
+  font-size:clamp(1.8rem,4vw,3rem);
+  line-height:1.05;
+  letter-spacing:-0.02em;
+  margin-bottom:1.5rem;
+}
+.divider {
+  border:none;
+  border-top:1px solid var(--border);
+  margin:0 6%;
+  position:relative;
+  z-index:1;
+}
+.problem-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:1px;
+  background:var(--border);
+  border:1px solid var(--border);
+  margin-top:3rem;
+}
+.problem-card {
+  background:var(--bg);
+  padding:2rem;
+}
+.problem-card:hover { background:var(--bg2); }
+.problem-icon { font-size:1.5rem; margin-bottom:1rem; display:block; }
+.problem-card h3 {
+  font-family:var(--display);
+  font-weight:700;
+  font-size:1rem;
+  margin-bottom:0.75rem;
+  color:var(--text);
+}
+.problem-card p { font-size:12px; color:var(--muted); line-height:1.8; }
+.solution-steps {
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:2rem;
+  margin-top:3rem;
+}
+.step {
+  padding:2rem;
+  border:1px solid var(--border);
+  transition:border-color 0.2s;
+}
+.step:hover { border-color:var(--accent); }
+.step-num {
+  font-family:var(--display);
+  font-weight:800;
+  font-size:3rem;
+  color:rgba(0,240,180,0.1);
+  line-height:1;
+  margin-bottom:1rem;
+}
+.step h3 {
+  font-family:var(--display);
+  font-weight:700;
+  font-size:1rem;
+  margin-bottom:0.75rem;
+  color:var(--text);
+}
+.step p { font-size:12px; color:var(--muted); line-height:1.8; }
+.case-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:1rem;
+  margin-top:3rem;
+}
+.case-card {
+  padding:1.75rem;
+  border:1px solid var(--border);
+  border-top-width:3px;
+}
+.case-card.go { border-top-color:#00ff88; background:linear-gradient(135deg,#0a2a1a,#0d1117); }
+.case-card.caution { border-top-color:#ffcc00; background:linear-gradient(135deg,#2a2010,#0d1117); }
+.case-card.nogo { border-top-color:#ff4444; background:linear-gradient(135deg,#2a0a0a,#0d1117); }
+.case-platform {
+  font-size:11px;
+  letter-spacing:0.15em;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:0.5rem;
+}
+.case-verdict {
+  font-family:var(--display);
+  font-weight:800;
+  font-size:1.3rem;
+  margin-bottom:1.25rem;
+}
+.case-metric { margin-bottom:0.5rem; }
+.case-metric-label { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; }
+.case-metric-value { font-family:var(--display); font-weight:700; font-size:1.1rem; }
+.case-why {
+  margin-top:1.25rem;
+  padding-top:1.25rem;
+  border-top:1px solid rgba(255,255,255,0.05);
+  font-size:11px;
+  color:var(--muted);
+  line-height:1.7;
+}
+.try-box {
+  margin-top:3rem;
+  padding:3rem;
+  border:1px solid var(--border);
+  background:var(--bg2);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:2rem;
+  flex-wrap:wrap;
+}
+.try-box h2 {
+  font-family:var(--display);
+  font-weight:800;
+  font-size:clamp(1.5rem,3vw,2.2rem);
+  line-height:1.1;
+  max-width:500px;
+}
+.try-box h2 span { color:var(--accent); }
+.about-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4rem;
+  margin-top:3rem;
+  align-items:start;
+}
+.about-text p {
+  font-size:13px;
+  color:var(--muted);
+  line-height:2;
+  margin-bottom:1.25rem;
+}
+.about-text .highlight {
+  color:var(--text);
+  font-size:14px;
+  border-left:2px solid var(--accent);
+  padding-left:1.25rem;
+  margin:2rem 0;
+  line-height:1.8;
+}
+.about-links { display:flex; flex-direction:column; gap:0.75rem; }
+.about-link {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:1rem 1.25rem;
+  border:1px solid var(--border);
+  text-decoration:none;
+  color:var(--muted);
+  font-size:12px;
+  letter-spacing:0.08em;
+  transition:all 0.2s;
+}
+.about-link:hover { border-color:var(--accent); color:var(--accent); }
+.about-link span { color:var(--accent); }
+footer {
+  position:relative;
+  z-index:1;
+  padding:2rem 6%;
+  border-top:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:1rem;
+}
+.footer-left { font-size:11px; color:var(--muted); letter-spacing:0.08em; }
+.footer-links { display:flex; gap:1.5rem; }
+.footer-links a {
+  font-size:11px;
+  color:var(--muted);
+  text-decoration:none;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  transition:color 0.2s;
+}
+.footer-links a:hover { color:var(--accent); }
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px); }
+  to { opacity:1; transform:translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo">Bharanidhar<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#problem">Problem</a></li>
+    <li><a href="#solution">Solution</a></li>
+    <li><a href="#casestudy">Case Study</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="https://qcommerce-analyzer-lbm2shxfnffcrjezpnfwj2.streamlit.app/" target="_blank" class="nav-cta">⚡ Try Tool</a></li>
+  </ul>
+</nav>
+
+<section id="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Q-Commerce Entry Intelligence · India 2026</div>
+    <h1 class="hero-headline">
+      <span class="line1">Stop Losing Money</span>
+      <span class="line2">on Q-Commerce.</span>
+    </h1>
+    <p class="hero-desc">68% of Indian D2C brands fail to break even on Blinkit, Zepto and Swiggy Instamart. This tool tells you exactly why — and whether your brand will survive — before you spend a single rupee.</p>
+    <div class="hero-cta">
+      <a href="https://qcommerce-analyzer-lbm2shxfnffcrjezpnfwj2.streamlit.app/" target="_blank" class="btn-primary">⚡ Try The Tool Free</a>
+      <a href="#casestudy" class="btn-ghost">View Mamaearth Case Study →</a>
+    </div>
+    <div class="stats-bar">
+      <div class="stat-item"><span class="stat-num">$7.6B</span><span class="stat-label">Q-Commerce GMV FY25</span></div>
+      <div class="stat-item"><span class="stat-num">68%</span><span class="stat-label">D2C Brands Fail to Break Even</span></div>
+      <div class="stat-item"><span class="stat-num">42%</span><span class="stat-label">Avg Platform Take Rate</span></div>
+      <div class="stat-item"><span class="stat-num">40%</span><span class="stat-label">Market Growing YoY</span></div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="content" id="problem">
+  <div class="section-num">01</div>
+  <div class="section-tag">The Problem</div>
+  <h2 class="section-title">Q-Commerce is a<br>margin trap for most brands.</h2>
+  <p style="color:var(--muted);max-width:560px;font-size:13px;line-height:1.9;">Brands enter quick commerce chasing growth. What they don't see until it's too late are the layers of fees that silently consume their margins — commission, fulfillment, mandatory ad spend and listing costs stacked on top of each other.</p>
+  <div class="problem-grid">
+    <div class="problem-card">
+      <span class="problem-icon">📦</span>
+      <h3>Platform Commission</h3>
+      <p>Blinkit charges 18%, Zepto 20%, Instamart 15% — on top of every rupee of revenue. Before you have shipped a single order.</p>
+    </div>
+    <div class="problem-card">
+      <span class="problem-icon">📢</span>
+      <h3>Mandatory Ad Spend</h3>
+      <p>Zepto demands Rs 5,00,000 per month minimum ad spend. Blinkit Rs 2,50,000. Without it, your products are invisible on the platform.</p>
+    </div>
+    <div class="problem-card">
+      <span class="problem-icon">🚚</span>
+      <h3>Fulfilment and Listing Fees</h3>
+      <p>Rs 40-50 per order in fulfilment fees. Rs 25,000 per SKU listing on Blinkit. These stack on top of commission and ad spend.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="content" id="solution">
+  <div class="section-num">02</div>
+  <div class="section-tag">The Solution</div>
+  <h2 class="section-title">A Go/No-Go verdict<br>before you commit.</h2>
+  <p style="color:var(--muted);max-width:560px;font-size:13px;line-height:1.9;">The Q-Commerce Entry Analyzer models every platform cost against your brand's unit economics and outputs a clear verdict — with the reasoning behind it.</p>
+  <div class="solution-steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h3>Enter Your Numbers</h3>
+      <p>COGS, Average Order Value, Customer Acquisition Cost, monthly orders, SKUs and product category.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h3>Model All 3 Platforms</h3>
+      <p>The tool calculates real 2026 commission, fulfillment, ad spend and listing costs for Blinkit, Zepto and Instamart.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h3>Get Your Verdict</h3>
+      <p>Go, Caution or No-Go with a profitability score out of 100, full cost breakdown and plain-English explanation.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="content" id="casestudy">
+  <div class="section-num">03</div>
+  <div class="section-tag">Case Study</div>
+  <h2 class="section-title">Mamaearth x Q-Commerce.<br>The real numbers.</h2>
+  <p style="color:var(--muted);max-width:560px;font-size:13px;line-height:1.9;">Honasa Consumer (Mamaearth) — Rs 601Cr revenue, 70.5% gross margin. We ran their unit economics through the analyzer. The results tell a clear story.</p>
+  <p style="color:var(--muted);font-size:11px;margin-top:0.5rem;letter-spacing:0.08em;">INPUTS — COGS: Rs 135 · AOV: Rs 450 · CAC: Rs 90 · Orders: 2,000/month · SKUs: 10 · Category: Personal Care</p>
+  <div class="case-grid">
+    <div class="case-card caution">
+      <div class="case-platform">Blinkit</div>
+      <div class="case-verdict">❌ NO-GO</div>
+      <div class="case-metric"><div class="case-metric-label">Score</div><div class="case-metric-value">34/100</div></div>
+      <div class="case-metric"><div class="case-metric-label">Net Profit/month</div><div class="case-metric-value" style="color:#ff4444">Rs -82,833</div></div>
+      <div class="case-metric"><div class="case-metric-label">Platform Take Rate</div><div class="case-metric-value">59.2%</div></div>
+      <div class="case-why">Blinkit's Rs 2,50,000 minimum ad spend plus 18% commission consumes 59% of revenue. Viable only with 3,500+ orders or premium SKUs above Rs 600 AOV.</div>
+    </div>
+    <div class="case-card nogo">
+      <div class="case-platform">Zepto</div>
+      <div class="case-verdict">❌ NO-GO</div>
+      <div class="case-metric"><div class="case-metric-label">Score</div><div class="case-metric-value">24/100</div></div>
+      <div class="case-metric"><div class="case-metric-label">Net Profit/month</div><div class="case-metric-value" style="color:#ff4444">Rs -3,20,000</div></div>
+      <div class="case-metric"><div class="case-metric-label">Platform Take Rate</div><div class="case-metric-value">85.56%</div></div>
+      <div class="case-why">Zepto's Rs 5,00,000 minimum ad spend alone exceeds 55% of revenue. Commercially indefensible at any order volume below 8,000 per month.</div>
+    </div>
+    <div class="case-card go">
+      <div class="case-platform">Swiggy Instamart</div>
+      <div class="case-verdict">⚠️ CAUTION</div>
+      <div class="case-metric"><div class="case-metric-label">Score</div><div class="case-metric-value">59/100</div></div>
+      <div class="case-metric"><div class="case-metric-label">Net Profit/month</div><div class="case-metric-value" style="color:#00ff88">Rs +35,000</div></div>
+      <div class="case-metric"><div class="case-metric-label">Platform Take Rate</div><div class="case-metric-value">46.11%</div></div>
+      <div class="case-why">Only viable entry point. Lowest fee structure plus Swiggy's existing food user base gives organic discovery. Start here, prove economics, then expand.</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="content">
+  <div class="try-box">
+    <div>
+      <div class="section-tag" style="margin-bottom:1rem;">Try It Yourself</div>
+      <h2>Enter your brand's numbers.<br>Get your <span>verdict instantly.</span></h2>
+      <p style="color:var(--muted);font-size:12px;margin-top:1rem;max-width:400px;line-height:1.8;">Free to use. Built on real 2026 platform data. No signup required.</p>
+    </div>
+    <a href="https://qcommerce-analyzer-lbm2shxfnffcrjezpnfwj2.streamlit.app/" target="_blank" class="btn-primary" style="white-space:nowrap;font-size:13px;padding:1rem 2.5rem;">⚡ Launch The Tool →</a>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section class="content" id="about">
+  <div class="section-num">04</div>
+  <div class="section-tag">About</div>
+  <h2 class="section-title">Built by someone who<br>was tired of guessing.</h2>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>I'm Bharanidhar S — a Business Analyst fresher with a background in marketing analytics. I built this tool because I couldn't find anything that gave D2C brands a clear, honest answer about Q-Commerce profitability.</p>
+      <div class="highlight">"I didn't build this to show I know Python. I built it because the problem was real, the data was public, and nobody had connected the dots yet."</div>
+      <p>The analyzer is built on real 2026 platform disclosures from Blinkit, Zepto and Swiggy Instamart — not textbook assumptions. The Mamaearth case study uses actual earnings data from Honasa Consumer's Q3 FY26 report.</p>
+    </div>
+    <div>
+      <div class="about-links">
+        <a href="https://github.com/ssbharani05/qcommerce-analyzer" target="_blank" class="about-link">GitHub — View Source Code <span>→</span></a>
+        <a href="https://qcommerce-analyzer-lbm2shxfnffcrjezpnfwj2.streamlit.app/" target="_blank" class="about-link">Live Tool — Q-Commerce Analyzer <span>→</span></a>
+        <a href="https://www.linkedin.com/in/bharanidhar-s-4264a91a4/" target="_blank" class="about-link">LinkedIn — Connect With Me <span>→</span></a>
+        <a href="mailto:ssbharani05@gmail.com" class="about-link">Email — ssbharani05@gmail.com <span>→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-left">2026 Bharanidhar S · Q-Commerce BA Project · Built with Python and Streamlit</div>
+  <div class="footer-links">
+    <a href="https://github.com/ssbharani05" target="_blank">GitHub</a>
+    <a href="https://www.linkedin.com/in/bharanidhar-s-4264a91a4/" target="_blank">LinkedIn</a>
+    <a href="mailto:ssbharani05@gmail.com">Email</a>
+  </div>
+</footer>
+
+</body>
+</html>
